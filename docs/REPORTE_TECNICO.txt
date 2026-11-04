@@ -2,7 +2,7 @@ UNIVERSIDAD MARIANO GÁLVEZ DE GUATEMALA
 Sistemas Operativos I
 
 Simulador de Funciones del Kernel de un Sistema Operativo
-Reporte técnico individual con estructura APA
+
 
 Autora: Marli Xiomara Vásquez Pérez
 Carné y sección: 7690-25-10995
