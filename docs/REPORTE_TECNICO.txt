@@ -5,7 +5,7 @@ Simulador de Funciones del Kernel de un Sistema Operativo
 Reporte técnico individual con estructura APA
 
 Autora: Marli Xiomara Vásquez Pérez
-Carné y sección: no proporcionados
+Carné y sección: 7690-25-10995
 Docente: Ing. Julio Gomez
 3 de noviembre de 2026
 Repositorio: https://github.com/mvasquezp31-create/Simulador_kernel
@@ -17,12 +17,14 @@ semáforo binario y dos recursos exclusivos. Se observa el comportamiento de
 cada módulo mediante comandos y bitácoras. La implementación es Java 17+
 sin dependencias externas. No ejecuta procesos ni administra hardware real.
 Se incorporan pruebas reproducibles y guiones para una demostración de
-hasta 15 minutos. Palabras clave: kernel, procesos, RAM, sincronización.
+hasta 15 minutos.
 
 1. Introducción y objetivos
 El proyecto permite visualizar cómo un sistema operativo comparte CPU,
 admite procesos en memoria y coordina accesos a datos y recursos.
+
 Su objetivo general es modelar las funciones solicitadas en el enunciado.
+
 Objetivos específicos: representar PCB y estados; aplicar quantum fijo 3;
 validar admisión en 100 MB; proteger una variable compartida; provocar y
 resolver espera circular; y aceptar parámetros aleatorios de forma robusta.
@@ -144,16 +146,3 @@ exposición. La presentación individual fue solicitada por la autora, aunque
 el enunciado original describe una demostración grupal; confirmar esa modalidad
 con el docente. Carné y sección quedan pendientes de completar por la autora.
 
-Referencias
-Arpaci-Dusseau, R. H., y Arpaci-Dusseau, A. C. (s. f.). Scheduling:
-Introduction. En Operating Systems: Three Easy Pieces.
-https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf
-Arpaci-Dusseau, R. H., y Arpaci-Dusseau, A. C. (s. f.). Semaphores.
-En Operating Systems: Three Easy Pieces.
-https://pages.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf
-Arpaci-Dusseau, R. H., y Arpaci-Dusseau, A. C. (s. f.). Common Concurrency
-Problems. En Operating Systems: Three Easy Pieces.
-https://pages.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf
-Universidad Mariano Gálvez de Guatemala. (s. f.). Enunciado del Proyecto
-Final: Sistema Operativo I [Documento de la asignatura proporcionado].
-Consulta de fuentes: 3 de noviembre de 2026.
