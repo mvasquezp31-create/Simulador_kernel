@@ -1,0 +1,159 @@
+UNIVERSIDAD MARIANO GÁLVEZ DE GUATEMALA
+Sistemas Operativos I
+
+Simulador de Funciones del Kernel de un Sistema Operativo
+Reporte técnico individual con estructura APA
+
+Autora: Marli Xiomara Vásquez Pérez
+Carné y sección: no proporcionados
+Docente: Ing. Julio Gomez
+3 de noviembre de 2026
+Repositorio: https://github.com/mvasquezp31-create/Simulador_kernel
+
+Resumen
+Se desarrolla una simulación discreta de un kernel con interfaz de consola.
+El modelo integra PCB, planificación Round Robin, memoria contigua de 100 MB,
+semáforo binario y dos recursos exclusivos. Se observa el comportamiento de
+cada módulo mediante comandos y bitácoras. La implementación es Java 17+
+sin dependencias externas. No ejecuta procesos ni administra hardware real.
+Se incorporan pruebas reproducibles y guiones para una demostración de
+hasta 15 minutos. Palabras clave: kernel, procesos, RAM, sincronización.
+
+1. Introducción y objetivos
+El proyecto permite visualizar cómo un sistema operativo comparte CPU,
+admite procesos en memoria y coordina accesos a datos y recursos.
+Su objetivo general es modelar las funciones solicitadas en el enunciado.
+Objetivos específicos: representar PCB y estados; aplicar quantum fijo 3;
+validar admisión en 100 MB; proteger una variable compartida; provocar y
+resolver espera circular; y aceptar parámetros aleatorios de forma robusta.
+
+2. Arquitectura del simulador
+El núcleo coordina módulos con responsabilidades independientes.
+
+               +---------------------------+
+               | Main: consola y validación|
+               +-------------+-------------+
+                             |
+               +-------------v-------------+
+               | Kernel: PCB y reloj       |
+               +--+--------+---------+-----+
+                  |        |         |
+      +-----------v--+ +---v-----+ +-v------------------+
+      | Planificador | | Memoria | | Semáforo / Recursos|
+      | FIFO y q=3   | | 100 MB  | | Colas y grafo      |
+      +--------------+ +---------+ +--------------------+
+
+Proceso almacena PID, estado, memoria, ráfagas total/restante, llegada,
+primera ejecución, finalización, espera en listos y tiempo bloqueado.
+Planificador conserva una cola FIFO sin PID duplicados. Memoria mantiene
+bloques ordenados por dirección. SemaforoBinario tiene propietario y cola
+propia. GestorRecursos registra los propietarios de R1/R2 y sus solicitantes.
+Kernel realiza cambios coherentes al bloquear, despertar, terminar y abortar.
+Los PCB terminados se conservan para inspección; su memoria queda liberada.
+
+Supuestos: un procesador, CPU en unidades abstractas y costo de contexto
+cero. Solo ejecutar CPU avanza el reloj; los comandos son eventos atómicos
+simulados entre despachos. No se modelan E/S, prioridades ni hardware.
+La terminación y el aborto liberan RAM, semáforo y recursos y despiertan
+solicitantes. La simulación no persiste al cerrar el programa.
+El documento anuncia cinco componentes, pero solo enumera A, B, C y D:
+se implementan los cuatro apartados descritos sin inventar un requisito.
+
+3. Análisis teórico
+3.1. Round Robin
+Round Robin limita cada turno a un quantum e intercala los procesos listos.
+Esta política permite atender otros trabajos antes de que finalice toda la
+ráfaga del primero (Arpaci-Dusseau y Arpaci-Dusseau, s. f., Scheduling).
+Aquí consumo=min(3, CPU restante). Si resta CPU se guarda contexto y el PID
+regresa al final de la cola; si termina libera sus reservas.
+
+Ejemplo comprobado: llegadas en 0; ráfagas A=5, B=4, C=2.
+Gantt: [0,3) A; [3,6) B; [6,8) C; [8,10) A; [10,11) B.
+Retorno=finalización-llegada.
+Respuesta=primera ejecución-llegada.
+Espera en listos=retorno-CPU consumida-tiempo bloqueado.
+En procesos terminados sin bloqueos, espera=retorno-ráfaga total.
+
+Proceso  Llegada  CPU  Finaliza  Retorno  Espera  Respuesta
+A             0    5        10       10       5          0
+B             0    4        11       11       7          3
+C             0    2         8        8       6          6
+Espera promedio=(5+7+6)/3=6 unidades.
+Retorno promedio=(10+11+8)/3=9.6667 unidades.
+Respuesta promedio=(0+3+6)/3=3 unidades.
+La bitácora registra cada expiración de quantum; despachos cuenta cada turno.
+Cambios entre PID cuenta solo despachos consecutivos de procesos distintos.
+Un quantum menor implicaría más sobrecarga en hardware real, costo que esta
+simulación declara explícitamente como cero.
+
+3.2. Gestión de memoria
+Se eligió asignación contigua dinámica first-fit. Se recorre la RAM simulada
+en [0,100) para encontrar el primer hueco suficiente. Reserva y PCB se crean
+solo si la admisión tiene éxito. Un rechazo Out of Memory no consume PID.
+Liberar un bloque permite reutilizarlo. No existe compactación automática:
+40 MB libres en huecos de 30 y 10 no admiten un bloque contiguo de 35 MB.
+El recorrido de n bloques cuesta O(n); el árbol mantiene las direcciones
+ordenadas. Toda memoria se expresa en MB enteros, con valores positivos.
+
+3.3. Concurrencia y sincronización
+Un semáforo binario parte disponible (1). wait(pid) modela wait(): obtiene
+permiso o bloquea en una cola específica; signal(pid) modela signal():
+transfiere permiso en orden FIFO o deja el semáforo libre.
+Estas primitivas modelan el control de acceso a una sección crítica
+(Arpaci-Dusseau y Arpaci-Dusseau, s. f., Semaphores).
+El simulador añade propietario para rechazar liberación ajena y adquisición
+recursiva. B bloqueado no está en listos ni puede modificar la variable.
+La prueba sin protección intercala dos lecturas de 0 y dos escrituras de 1:
+se obtiene 1 en lugar de 2. Con el semáforo implementado, A escribe primero,
+transfiere a B y el resultado es 2. Es concurrencia lógica reproducible, no
+una carrera ejecutada con hilos reales del equipo.
+
+3.4. Interbloqueo
+Cada recurso admite un propietario. Si está ocupado, el solicitante retiene
+sus otros recursos y espera. Una arista del solicitante al propietario
+representa la dependencia. Repetir un PID al seguir aristas indica un ciclo.
+A posee R1 y pide R2; B posee R2 y pide R1: A -> B -> A.
+Se cumplen exclusión mutua, retención y espera, ausencia de expropiación
+ordinaria y espera circular (Arpaci-Dusseau y Arpaci-Dusseau, s. f.,
+Common Concurrency Problems). Abortar una víctima es una recuperación
+explícita: libera RAM y recursos, retira solicitudes y despierta al otro PID.
+El detector cubre R1/R2, no ciclos mixtos con el semáforo de sección crítica.
+
+4. Bitácora de casos de prueba
+Los anexos son volcados de texto de ejecuciones reales, modalidad admitida
+por el enunciado. Verificar.ps1 compila, ejecuta las pruebas, recorre los
+mismos comandos de la CLI y regenera este PDF con sus resultados.
+Caso RAM: admitir 60 MB, rechazar 41, abortar y admitir 100 MB.
+Caso RR: verificar A-B-C-A-B y tiempos de espera 5,7,6.
+Caso semáforo: B espera, su escritura se rechaza y tras signal el total es 2.
+Caso deadlock: detectar A-B-A, abortar A y permitir que B termine.
+Caso estrés: 500 operaciones con semilla 20261103, conservando ocupación
+entre 0 y 100 y cola sin duplicados. Se prueban además negativos, ceros,
+números enormes, PID inexistentes, recursos inválidos y comandos mal formados.
+Las entradas erróneas producen un mensaje y la CLI continúa funcionando.
+Ejecutar tiene un límite configurable de turnos y conserva estado al alcanzarlo.
+
+5. Conclusiones
+El simulador permite observar el intercambio de CPU y la admisión de procesos
+sin depender de un sistema operativo real. Distinguir colas de listos y de
+bloqueados evita despachar procesos sin permiso. La liberación coordinada
+permite recuperar memoria y romper el interbloqueo sin dejar reservas huérfanas.
+Las métricas se corresponden con cálculos teóricos bajo los supuestos elegidos.
+Las pruebas deterministas y de estrés respaldan las validaciones para la
+exposición. La presentación individual fue solicitada por la autora, aunque
+el enunciado original describe una demostración grupal; confirmar esa modalidad
+con el docente. Carné y sección quedan pendientes de completar por la autora.
+
+Referencias
+Arpaci-Dusseau, R. H., y Arpaci-Dusseau, A. C. (s. f.). Scheduling:
+Introduction. En Operating Systems: Three Easy Pieces.
+https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf
+Arpaci-Dusseau, R. H., y Arpaci-Dusseau, A. C. (s. f.). Semaphores.
+En Operating Systems: Three Easy Pieces.
+https://pages.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf
+Arpaci-Dusseau, R. H., y Arpaci-Dusseau, A. C. (s. f.). Common Concurrency
+Problems. En Operating Systems: Three Easy Pieces.
+https://pages.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf
+Universidad Mariano Gálvez de Guatemala. (s. f.). Enunciado del Proyecto
+Final: Sistema Operativo I [Documento de la asignatura proporcionado].
+Consulta de fuentes: 3 de noviembre de 2026.

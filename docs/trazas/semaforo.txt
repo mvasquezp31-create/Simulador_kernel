@@ -1,0 +1,31 @@
+﻿SIMULADOR KERNEL | RAM 100 MB | Round Robin q=3 | escriba ayuda
+kernel> crear A 10 12
+Creado PID=1
+kernel> crear B 10 12
+Creado PID=2
+kernel> wait 1
+Permiso concedido.
+kernel> wait 2
+Proceso bloqueado en semáforo.
+kernel> sumar 2 1
+ERROR: El proceso está bloqueado y no puede efectuar esa operación.
+kernel> sumar 1 1
+Variable global=1
+kernel> signal 1
+Permiso liberado/transferido.
+kernel> sumar 2 1
+Variable global=2
+kernel> signal 2
+Permiso liberado/transferido.
+kernel> estado
+Reloj=0 q=3 despachos=0 cambios entre PID=0
+RAM: 20/100 MB; libres=80 MB; bloques=[Bloque[pid=1, inicio=0, tamanio=10], Bloque[pid=2, inicio=10, tamanio=10]]
+Listos: [1, 2]
+Semáforo=1 propietario=null espera=[]
+Recursos (recurso=PID): {}; solicitudes (PID=recurso): {}
+Variable global=2
+Deadlock: []
+  1 A               LISTO                RAM= 10 MB CPU=12/12 espera=0 bloqueo=0 respuesta=-1 fin=-1
+  2 B               LISTO                RAM= 10 MB CPU=12/12 espera=0 bloqueo=0 respuesta=-1 fin=-1
+
+kernel> salir

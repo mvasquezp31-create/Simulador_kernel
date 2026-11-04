@@ -1,0 +1,7 @@
+crear A 10 5
+crear B 10 4
+crear C 10 2
+ejecutar
+estado
+bitacora
+salir

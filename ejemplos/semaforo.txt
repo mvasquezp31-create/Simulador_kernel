@@ -1,0 +1,11 @@
+crear A 10 12
+crear B 10 12
+wait 1
+wait 2
+sumar 2 1
+sumar 1 1
+signal 1
+sumar 2 1
+signal 2
+estado
+salir

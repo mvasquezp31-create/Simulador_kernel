@@ -1,0 +1,40 @@
+﻿SIMULADOR KERNEL | RAM 100 MB | Round Robin q=3 | escriba ayuda
+kernel> crear A 10 5
+Creado PID=1
+kernel> crear B 10 4
+Creado PID=2
+kernel> crear C 10 2
+Creado PID=3
+kernel> ejecutar
+CPU [0,3) PID=1 restante=2
+CPU [3,6) PID=2 restante=1
+CPU [6,8) PID=3 restante=0
+CPU [8,10) PID=1 restante=0
+CPU [10,11) PID=2 restante=0
+kernel> estado
+Reloj=11 q=3 despachos=5 cambios entre PID=4
+RAM: 0/100 MB; libres=100 MB; bloques=[]
+Listos: []
+Semáforo=1 propietario=null espera=[]
+Recursos (recurso=PID): {}; solicitudes (PID=recurso): {}
+Variable global=0
+Deadlock: []
+  1 A               TERMINADO            RAM= 10 MB CPU=0/5 espera=5 bloqueo=0 respuesta=0 fin=10
+  2 B               TERMINADO            RAM= 10 MB CPU=0/4 espera=7 bloqueo=0 respuesta=3 fin=11
+  3 C               TERMINADO            RAM= 10 MB CPU=0/2 espera=6 bloqueo=0 respuesta=6 fin=8
+
+kernel> bitacora
+t=0 CREAR PID=1 nombre=A RAM=10 CPU=5
+t=0 CREAR PID=2 nombre=B RAM=10 CPU=4
+t=0 CREAR PID=3 nombre=C RAM=10 CPU=2
+t=3 CPU [0,3) PID=1 restante=2
+t=3 FIN QUANTUM: guardar contexto PID=1 y enviar al final de listos
+t=6 CPU [3,6) PID=2 restante=1
+t=6 FIN QUANTUM: guardar contexto PID=2 y enviar al final de listos
+t=8 CPU [6,8) PID=3 restante=0
+t=8 TERMINADO PID=3: RAM y recursos liberados
+t=10 CPU [8,10) PID=1 restante=0
+t=10 TERMINADO PID=1: RAM y recursos liberados
+t=11 CPU [10,11) PID=2 restante=0
+t=11 TERMINADO PID=2: RAM y recursos liberados
+kernel> salir

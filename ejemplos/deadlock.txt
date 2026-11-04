@@ -1,0 +1,11 @@
+crear A 40 5
+crear B 40 5
+deadlock 1 2
+estado
+detectar
+abortar 1
+detectar
+ejecutar
+estado
+bitacora
+salir

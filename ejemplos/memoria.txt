@@ -1,0 +1,8 @@
+crear A 60 5
+crear Exceso 41 2
+estado
+abortar 1
+crear Completo 100 1
+ejecutar
+estado
+salir

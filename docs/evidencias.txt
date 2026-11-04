@@ -1,0 +1,123 @@
+CASO 1. Out of Memory y recuperación de RAM
+OK Rechazo inmediato con RAM insuficiente -> Out of Memory: se necesitan 41 MB contiguos; libres=40 MB. Puede existir fragmentación externa.
+OK OOM no deja PCB ni reserva parcial
+OK Abortar devuelve toda la RAM
+OK OOM no consume PID
+OK Terminar libera RAM
+OK Memoria cero -> PID y memoria deben ser positivos.
+OK Memoria negativa -> PID y memoria deben ser positivos.
+OK Memoria extrema sin desbordamiento -> Out of Memory: se necesitan 2147483647 MB contiguos; libres=100 MB. Puede existir fragmentación externa.
+OK Ráfaga cero -> Ráfaga: 1 a 1000000 unidades.
+OK Ráfaga fuera de rango -> Ráfaga: 1 a 1000000 unidades.
+OK Nombre vacío -> Nombre: 1 a 30 letras, números, _ o -.
+OK PID inexistente -> PID inexistente: 999
+OK Fragmentación: 40 MB libres pero ningún hueco de 35 -> Out of Memory: se necesitan 35 MB contiguos; libres=40 MB. Puede existir fragmentación externa.
+OK Huecos contiguos se reutilizan con first-fit
+Reloj=0 q=3 despachos=0 cambios entre PID=0
+RAM: 90/100 MB; libres=10 MB; bloques=[Bloque[pid=4, inicio=0, tamanio=60], Bloque[pid=3, inicio=60, tamanio=30]]
+Listos: [3, 4]
+Semáforo=1 propietario=null espera=[]
+Recursos (recurso=PID): {}; solicitudes (PID=recurso): {}
+Variable global=0
+Deadlock: []
+  1 F1              ABORTADO             RAM= 30 MB CPU=2/2 espera=0 bloqueo=0 respuesta=-1 fin=0
+  2 F2              ABORTADO             RAM= 30 MB CPU=2/2 espera=0 bloqueo=0 respuesta=-1 fin=0
+  3 F3              LISTO                RAM= 30 MB CPU=2/2 espera=0 bloqueo=0 respuesta=-1 fin=-1
+  4 Reutilizar      LISTO                RAM= 60 MB CPU=1/1 espera=0 bloqueo=0 respuesta=-1 fin=-1
+
+CASO 2. Round Robin q=3; llegadas simultáneas y costo de contexto cero
+CPU [0,3) PID=1 restante=2
+CPU [3,6) PID=2 restante=1
+CPU [6,8) PID=3 restante=0
+CPU [8,10) PID=1 restante=0
+CPU [10,11) PID=2 restante=0
+OK RR requiere cinco despachos
+OK Secuencia exacta A B C A B
+OK Tiempos de finalización 10, 11, 8
+OK Tiempos de espera 5, 7, 6; promedio 6
+OK Tiempos de respuesta 0, 3, 6
+OK CPU total y liberación de RAM
+OK CPU sin listos no inventa avance temporal
+OK Un proceso terminado no vuelve a ejecutarse -> El proceso ya terminó o fue abortado.
+OK Límite de turnos inválido -> Turnos: 1 a 100000.
+OK Ejecución acotada mantiene estado para continuar
+OK Llegadas posteriores usan el reloj vigente
+CASO 3. Sección crítica y cola FIFO del semáforo
+Intercalado sin protección: leer A=0, leer B=0, escribir A=1, escribir B=1. Resultado=1; esperado=2.
+OK No se modifica variable global sin permiso -> Ejecute wait PID antes de modificar la variable global.
+OK A obtiene wait
+OK B y C esperan en cola específica
+OK Bloqueados no permanecen en listos
+OK B bloqueado no escribe en sección crítica -> El proceso está bloqueado y no puede efectuar esa operación.
+OK Un no propietario no libera semáforo -> Solo el propietario puede ejecutar signal.
+OK signal transfiere a B en orden FIFO
+OK Con semáforo se conservan ambas actualizaciones
+OK Abortar propietario despierta al siguiente
+OK Semáforo vuelve a libre
+OK wait no reentrante rechazado sin corromper colas -> El semáforo no es reentrante.
+OK Abortar solicitante lo retira de la cola
+OK Desbordamiento de variable global rechazado -> long overflow
+OK Suma fallida conserva el valor anterior
+Reloj=0 q=3 despachos=0 cambios entre PID=0
+RAM: 10/100 MB; libres=90 MB; bloques=[Bloque[pid=1, inicio=0, tamanio=10]]
+Listos: [1]
+Semáforo=0 propietario=1 espera=[]
+Recursos (recurso=PID): {}; solicitudes (PID=recurso): {}
+Variable global=9223372036854775807
+Deadlock: []
+  1 A               LISTO                RAM= 10 MB CPU=12/12 espera=0 bloqueo=0 respuesta=-1 fin=-1
+  2 B               ABORTADO             RAM= 10 MB CPU=12/12 espera=0 bloqueo=0 respuesta=-1 fin=0
+  3 C               ABORTADO             RAM= 10 MB CPU=12/12 espera=0 bloqueo=0 respuesta=-1 fin=0
+
+CASO 4. Detección y resolución de Deadlock
+Reloj=0 q=3 despachos=0 cambios entre PID=0
+RAM: 80/100 MB; libres=20 MB; bloques=[Bloque[pid=1, inicio=0, tamanio=40], Bloque[pid=2, inicio=40, tamanio=40]]
+Listos: []
+Semáforo=1 propietario=null espera=[]
+Recursos (recurso=PID): {1=1, 2=2}; solicitudes (PID=recurso): {1=2, 2=1}
+Variable global=0
+Deadlock: [1, 2, 1]
+  1 A               BLOQUEADO_RECURSO    RAM= 40 MB CPU=5/5 espera=0 bloqueo=0 respuesta=-1 fin=-1
+  2 B               BLOQUEADO_RECURSO    RAM= 40 MB CPU=5/5 espera=0 bloqueo=0 respuesta=-1 fin=-1
+
+OK Grafo detecta ciclo A -> B -> A
+OK Deadlock bloquea ambos PCB
+OK Planificador alerta sin quedar en bucle
+OK Abortar A rompe el ciclo y despierta B
+OK B recibe R1; RAM de A liberada
+OK El superviviente finaliza y libera todos los recursos
+t=0 CREAR PID=1 nombre=A RAM=40 CPU=5
+t=0 CREAR PID=2 nombre=B RAM=40 CPU=5
+t=0 SOLICITAR PID=1 R1 concedido
+t=0 SOLICITAR PID=2 R2 concedido
+t=0 SOLICITAR PID=1 R2 BLOQUEADO
+t=0 SOLICITAR PID=2 R1 BLOQUEADO
+t=0 ALERTA DEADLOCK: [1, 2, 1]
+t=0 DEADLOCK [1, 2, 1]; use abortar PID.
+t=0 DESPERTAR PID=2
+t=0 ABORTADO PID=1: RAM y recursos liberados
+t=3 CPU [0,3) PID=2 restante=2
+t=3 FIN QUANTUM: guardar contexto PID=2 y enviar al final de listos
+t=5 CPU [3,5) PID=2 restante=0
+t=5 TERMINADO PID=2: RAM y recursos liberados
+OK Deadlock requiere dos PID diferentes -> Seleccione dos PID diferentes y ambos recursos libres.
+OK Fallo de precondición no reserva recursos parciales
+OK Recurso inexistente -> El recurso debe ser 1 o 2.
+OK No volver a solicitar recurso propio -> El proceso ya posee ese recurso.
+OK No liberar recurso ajeno -> El proceso no posee ese recurso.
+OK Espera simple no es deadlock
+OK Abortar elimina solicitudes pendientes
+OK Liberación normal deja recursos libres
+OK Consola admite tabulaciones
+OK Consola sobrevive a entrada: crear X no 3
+OK Consola sobrevive a entrada: crear X 10
+OK Consola sobrevive a entrada: crear X 1 9999999999999
+OK Consola sobrevive a entrada: inventado
+OK Consola sobrevive a entrada: sumar 1 99999999999999999999999999
+OK Consola sobrevive a entrada: paso basura
+OK Consola sobrevive a entrada: wait -2
+OK Consola imprime éxito y errores recuperables
+OK Salida explícita
+OK Estrés reproducible: 500 operaciones mantienen RAM y cola válidas
+OK Estrés: todos los procesos admitidos finalizan
+RESULTADO: 65 comprobaciones correctas.

@@ -1,0 +1,5 @@
+target/
+*.tmp
+puntos_guardado/
+
+herramientas/Crear-*.cjs

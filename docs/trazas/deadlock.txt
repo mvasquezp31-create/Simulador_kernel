@@ -1,0 +1,54 @@
+﻿SIMULADOR KERNEL | RAM 100 MB | Round Robin q=3 | escriba ayuda
+kernel> crear A 40 5
+Creado PID=1
+kernel> crear B 40 5
+Creado PID=2
+kernel> deadlock 1 2
+ALERTA DEADLOCK [1, 2, 1]; use abortar PID.
+kernel> estado
+Reloj=0 q=3 despachos=0 cambios entre PID=0
+RAM: 80/100 MB; libres=20 MB; bloques=[Bloque[pid=1, inicio=0, tamanio=40], Bloque[pid=2, inicio=40, tamanio=40]]
+Listos: []
+Semáforo=1 propietario=null espera=[]
+Recursos (recurso=PID): {1=1, 2=2}; solicitudes (PID=recurso): {1=2, 2=1}
+Variable global=0
+Deadlock: [1, 2, 1]
+  1 A               BLOQUEADO_RECURSO    RAM= 40 MB CPU=5/5 espera=0 bloqueo=0 respuesta=-1 fin=-1
+  2 B               BLOQUEADO_RECURSO    RAM= 40 MB CPU=5/5 espera=0 bloqueo=0 respuesta=-1 fin=-1
+
+kernel> detectar
+ALERTA DEADLOCK [1, 2, 1]; use abortar PID.
+kernel> abortar 1
+Proceso abortado; memoria y recursos liberados.
+Sin deadlock de recursos.
+kernel> detectar
+Sin deadlock de recursos.
+kernel> ejecutar
+CPU [0,3) PID=2 restante=2
+CPU [3,5) PID=2 restante=0
+kernel> estado
+Reloj=5 q=3 despachos=2 cambios entre PID=0
+RAM: 0/100 MB; libres=100 MB; bloques=[]
+Listos: []
+Semáforo=1 propietario=null espera=[]
+Recursos (recurso=PID): {}; solicitudes (PID=recurso): {}
+Variable global=0
+Deadlock: []
+  1 A               ABORTADO             RAM= 40 MB CPU=5/5 espera=0 bloqueo=0 respuesta=-1 fin=0
+  2 B               TERMINADO            RAM= 40 MB CPU=0/5 espera=0 bloqueo=0 respuesta=0 fin=5
+
+kernel> bitacora
+t=0 CREAR PID=1 nombre=A RAM=40 CPU=5
+t=0 CREAR PID=2 nombre=B RAM=40 CPU=5
+t=0 SOLICITAR PID=1 R1 concedido
+t=0 SOLICITAR PID=2 R2 concedido
+t=0 SOLICITAR PID=1 R2 BLOQUEADO
+t=0 SOLICITAR PID=2 R1 BLOQUEADO
+t=0 ALERTA DEADLOCK: [1, 2, 1]
+t=0 DESPERTAR PID=2
+t=0 ABORTADO PID=1: RAM y recursos liberados
+t=3 CPU [0,3) PID=2 restante=2
+t=3 FIN QUANTUM: guardar contexto PID=2 y enviar al final de listos
+t=5 CPU [3,5) PID=2 restante=0
+t=5 TERMINADO PID=2: RAM y recursos liberados
+kernel> salir

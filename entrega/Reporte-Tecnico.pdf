@@ -1,0 +1,741 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R 32 0 R 34 0 R 36 0 R 38 0 R 40 0 R ] /Count 19 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 1792 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (UNIVERSIDAD MARIANO GÁLVEZ DE GUATEMALA) Tj T*
+/F1 12 Tf (Sistemas Operativos I) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (Simulador de Funciones del Kernel de un Sistema Operativo) Tj T*
+/F1 12 Tf (Reporte técnico individual con estructura APA) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (Autora: Marli Xiomara Vásquez Pérez) Tj T*
+/F1 12 Tf (Carné y sección: no proporcionados) Tj T*
+/F1 12 Tf (Docente: Ing. Julio Gomez) Tj T*
+/F1 12 Tf (3 de noviembre de 2026) Tj T*
+/F1 12 Tf (Repositorio: https://github.com/mvasquezp31-create/Simulador_kernel) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (Resumen) Tj T*
+/F1 12 Tf (Se desarrolla una simulación discreta de un kernel con interfaz de consola.) Tj T*
+/F1 12 Tf (El modelo integra PCB, planificación Round Robin, memoria contigua de 100 MB,) Tj T*
+/F1 12 Tf (semáforo binario y dos recursos exclusivos. Se observa el comportamiento de) Tj T*
+/F1 12 Tf (cada módulo mediante comandos y bitácoras. La implementación es Java 17+) Tj T*
+/F1 12 Tf (sin dependencias externas. No ejecuta procesos ni administra hardware real.) Tj T*
+/F1 12 Tf (Se incorporan pruebas reproducibles y guiones para una demostración de) Tj T*
+/F1 12 Tf (hasta 15 minutos. Palabras clave: kernel, procesos, RAM, sincronización.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (1. Introducción y objetivos) Tj T*
+/F1 12 Tf (El proyecto permite visualizar cómo un sistema operativo comparte CPU,) Tj T*
+/F1 12 Tf (admite procesos en memoria y coordina accesos a datos y recursos.) Tj T*
+/F1 12 Tf (Su objetivo general es modelar las funciones solicitadas en el enunciado.) Tj T*
+/F1 12 Tf (Objetivos específicos: representar PCB y estados; aplicar quantum fijo 3;) Tj T*
+/F1 12 Tf (validar admisión en 100 MB; proteger una variable compartida; provocar y) Tj T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 1846 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (resolver espera circular; y aceptar parámetros aleatorios de forma robusta.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (2. Arquitectura del simulador) Tj T*
+/F1 12 Tf (El núcleo coordina módulos con responsabilidades independientes.) Tj T*
+/F1 12 Tf () Tj T*
+/F2 9 Tf (               +---------------------------+) Tj T*
+/F2 9 Tf (               | Main: consola y validación|) Tj T*
+/F2 9 Tf (               +-------------+-------------+) Tj T*
+/F2 9 Tf (                             |) Tj T*
+/F2 9 Tf (               +-------------v-------------+) Tj T*
+/F2 9 Tf (               | Kernel: PCB y reloj       |) Tj T*
+/F2 9 Tf (               +--+--------+---------+-----+) Tj T*
+/F2 9 Tf (                  |        |         |) Tj T*
+/F2 9 Tf (      +-----------v--+ +---v-----+ +-v------------------+) Tj T*
+/F2 9 Tf (      | Planificador | | Memoria | | Semáforo / Recursos|) Tj T*
+/F2 9 Tf (      | FIFO y q=3   | | 100 MB  | | Colas y grafo      |) Tj T*
+/F2 9 Tf (      +--------------+ +---------+ +--------------------+) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (Proceso almacena PID, estado, memoria, ráfagas total/restante, llegada,) Tj T*
+/F1 12 Tf (primera ejecución, finalización, espera en listos y tiempo bloqueado.) Tj T*
+/F1 12 Tf (Planificador conserva una cola FIFO sin PID duplicados. Memoria mantiene) Tj T*
+/F1 12 Tf (bloques ordenados por dirección. SemaforoBinario tiene propietario y cola) Tj T*
+/F1 12 Tf (propia. GestorRecursos registra los propietarios de R1/R2 y sus solicitantes.) Tj T*
+/F1 12 Tf (Kernel realiza cambios coherentes al bloquear, despertar, terminar y abortar.) Tj T*
+/F1 12 Tf (Los PCB terminados se conservan para inspección; su memoria queda liberada.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (Supuestos: un procesador, CPU en unidades abstractas y costo de contexto) Tj T*
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 1933 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (cero. Solo ejecutar CPU avanza el reloj; los comandos son eventos atómicos) Tj T*
+/F1 12 Tf (simulados entre despachos. No se modelan E/S, prioridades ni hardware.) Tj T*
+/F1 12 Tf (La terminación y el aborto liberan RAM, semáforo y recursos y despiertan) Tj T*
+/F1 12 Tf (solicitantes. La simulación no persiste al cerrar el programa.) Tj T*
+/F1 12 Tf (El documento anuncia cinco componentes, pero solo enumera A, B, C y D:) Tj T*
+/F1 12 Tf (se implementan los cuatro apartados descritos sin inventar un requisito.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (3. Análisis teórico) Tj T*
+/F1 12 Tf (3.1. Round Robin) Tj T*
+/F1 12 Tf (Round Robin limita cada turno a un quantum e intercala los procesos listos.) Tj T*
+/F1 12 Tf (Esta política permite atender otros trabajos antes de que finalice toda la) Tj T*
+/F1 12 Tf (ráfaga del primero \(Arpaci-Dusseau y Arpaci-Dusseau, s. f., Scheduling\).) Tj T*
+/F1 12 Tf (Aquí consumo=min\(3, CPU restante\). Si resta CPU se guarda contexto y el PID) Tj T*
+/F1 12 Tf (regresa al final de la cola; si termina libera sus reservas.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (Ejemplo comprobado: llegadas en 0; ráfagas A=5, B=4, C=2.) Tj T*
+/F1 12 Tf (Gantt: [0,3\) A; [3,6\) B; [6,8\) C; [8,10\) A; [10,11\) B.) Tj T*
+/F1 12 Tf (Retorno=finalización-llegada.) Tj T*
+/F1 12 Tf (Respuesta=primera ejecución-llegada.) Tj T*
+/F1 12 Tf (Espera en listos=retorno-CPU consumida-tiempo bloqueado.) Tj T*
+/F1 12 Tf (En procesos terminados sin bloqueos, espera=retorno-ráfaga total.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (Proceso  Llegada  CPU  Finaliza  Retorno  Espera  Respuesta) Tj T*
+/F1 12 Tf (A             0    5        10       10       5          0) Tj T*
+/F1 12 Tf (B             0    4        11       11       7          3) Tj T*
+/F1 12 Tf (C             0    2         8        8       6          6) Tj T*
+/F1 12 Tf (Espera promedio=\(5+7+6\)/3=6 unidades.) Tj T*
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 2187 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (Retorno promedio=\(10+11+8\)/3=9.6667 unidades.) Tj T*
+/F1 12 Tf (Respuesta promedio=\(0+3+6\)/3=3 unidades.) Tj T*
+/F1 12 Tf (La bitácora registra cada expiración de quantum; despachos cuenta cada turno.) Tj T*
+/F1 12 Tf (Cambios entre PID cuenta solo despachos consecutivos de procesos distintos.) Tj T*
+/F1 12 Tf (Un quantum menor implicaría más sobrecarga en hardware real, costo que esta) Tj T*
+/F1 12 Tf (simulación declara explícitamente como cero.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (3.2. Gestión de memoria) Tj T*
+/F1 12 Tf (Se eligió asignación contigua dinámica first-fit. Se recorre la RAM simulada) Tj T*
+/F1 12 Tf (en [0,100\) para encontrar el primer hueco suficiente. Reserva y PCB se crean) Tj T*
+/F1 12 Tf (solo si la admisión tiene éxito. Un rechazo Out of Memory no consume PID.) Tj T*
+/F1 12 Tf (Liberar un bloque permite reutilizarlo. No existe compactación automática:) Tj T*
+/F1 12 Tf (40 MB libres en huecos de 30 y 10 no admiten un bloque contiguo de 35 MB.) Tj T*
+/F1 12 Tf (El recorrido de n bloques cuesta O\(n\); el árbol mantiene las direcciones) Tj T*
+/F1 12 Tf (ordenadas. Toda memoria se expresa en MB enteros, con valores positivos.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (3.3. Concurrencia y sincronización) Tj T*
+/F1 12 Tf (Un semáforo binario parte disponible \(1\). wait\(pid\) modela wait\(\): obtiene) Tj T*
+/F1 12 Tf (permiso o bloquea en una cola específica; signal\(pid\) modela signal\(\):) Tj T*
+/F1 12 Tf (transfiere permiso en orden FIFO o deja el semáforo libre.) Tj T*
+/F1 12 Tf (Estas primitivas modelan el control de acceso a una sección crítica) Tj T*
+/F1 12 Tf (\(Arpaci-Dusseau y Arpaci-Dusseau, s. f., Semaphores\).) Tj T*
+/F1 12 Tf (El simulador añade propietario para rechazar liberación ajena y adquisición) Tj T*
+/F1 12 Tf (recursiva. B bloqueado no está en listos ni puede modificar la variable.) Tj T*
+/F1 12 Tf (La prueba sin protección intercala dos lecturas de 0 y dos escrituras de 1:) Tj T*
+/F1 12 Tf (se obtiene 1 en lugar de 2. Con el semáforo implementado, A escribe primero,) Tj T*
+/F1 12 Tf (transfiere a B y el resultado es 2. Es concurrencia lógica reproducible, no) Tj T*
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 2130 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (una carrera ejecutada con hilos reales del equipo.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (3.4. Interbloqueo) Tj T*
+/F1 12 Tf (Cada recurso admite un propietario. Si está ocupado, el solicitante retiene) Tj T*
+/F1 12 Tf (sus otros recursos y espera. Una arista del solicitante al propietario) Tj T*
+/F1 12 Tf (representa la dependencia. Repetir un PID al seguir aristas indica un ciclo.) Tj T*
+/F1 12 Tf (A posee R1 y pide R2; B posee R2 y pide R1: A -> B -> A.) Tj T*
+/F1 12 Tf (Se cumplen exclusión mutua, retención y espera, ausencia de expropiación) Tj T*
+/F1 12 Tf (ordinaria y espera circular \(Arpaci-Dusseau y Arpaci-Dusseau, s. f.,) Tj T*
+/F1 12 Tf (Common Concurrency Problems\). Abortar una víctima es una recuperación) Tj T*
+/F1 12 Tf (explícita: libera RAM y recursos, retira solicitudes y despierta al otro PID.) Tj T*
+/F1 12 Tf (El detector cubre R1/R2, no ciclos mixtos con el semáforo de sección crítica.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (4. Bitácora de casos de prueba) Tj T*
+/F1 12 Tf (Los anexos son volcados de texto de ejecuciones reales, modalidad admitida) Tj T*
+/F1 12 Tf (por el enunciado. Verificar.ps1 compila, ejecuta las pruebas, recorre los) Tj T*
+/F1 12 Tf (mismos comandos de la CLI y regenera este PDF con sus resultados.) Tj T*
+/F1 12 Tf (Caso RAM: admitir 60 MB, rechazar 41, abortar y admitir 100 MB.) Tj T*
+/F1 12 Tf (Caso RR: verificar A-B-C-A-B y tiempos de espera 5,7,6.) Tj T*
+/F1 12 Tf (Caso semáforo: B espera, su escritura se rechaza y tras signal el total es 2.) Tj T*
+/F1 12 Tf (Caso deadlock: detectar A-B-A, abortar A y permitir que B termine.) Tj T*
+/F1 12 Tf (Caso estrés: 500 operaciones con semilla 20261103, conservando ocupación) Tj T*
+/F1 12 Tf (entre 0 y 100 y cola sin duplicados. Se prueban además negativos, ceros,) Tj T*
+/F1 12 Tf (números enormes, PID inexistentes, recursos inválidos y comandos mal formados.) Tj T*
+/F1 12 Tf (Las entradas erróneas producen un mensaje y la CLI continúa funcionando.) Tj T*
+/F1 12 Tf (Ejecutar tiene un límite configurable de turnos y conserva estado al alcanzarl) Tj T*
+/F1 12 Tf (o.) Tj T*
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 1920 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf () Tj T*
+/F1 12 Tf (5. Conclusiones) Tj T*
+/F1 12 Tf (El simulador permite observar el intercambio de CPU y la admisión de procesos) Tj T*
+/F1 12 Tf (sin depender de un sistema operativo real. Distinguir colas de listos y de) Tj T*
+/F1 12 Tf (bloqueados evita despachar procesos sin permiso. La liberación coordinada) Tj T*
+/F1 12 Tf (permite recuperar memoria y romper el interbloqueo sin dejar reservas huérfana) Tj T*
+/F1 12 Tf (s.) Tj T*
+/F1 12 Tf (Las métricas se corresponden con cálculos teóricos bajo los supuestos elegidos) Tj T*
+/F1 12 Tf (.) Tj T*
+/F1 12 Tf (Las pruebas deterministas y de estrés respaldan las validaciones para la) Tj T*
+/F1 12 Tf (exposición. La presentación individual fue solicitada por la autora, aunque) Tj T*
+/F1 12 Tf (el enunciado original describe una demostración grupal; confirmar esa modalida) Tj T*
+/F1 12 Tf (d) Tj T*
+/F1 12 Tf (con el docente. Carné y sección quedan pendientes de completar por la autora.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (Referencias) Tj T*
+/F1 12 Tf (Arpaci-Dusseau, R. H., y Arpaci-Dusseau, A. C. \(s. f.\). Scheduling:) Tj T*
+/F1 12 Tf (Introduction. En Operating Systems: Three Easy Pieces.) Tj T*
+/F1 12 Tf (https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf) Tj T*
+/F1 12 Tf (Arpaci-Dusseau, R. H., y Arpaci-Dusseau, A. C. \(s. f.\). Semaphores.) Tj T*
+/F1 12 Tf (En Operating Systems: Three Easy Pieces.) Tj T*
+/F1 12 Tf (https://pages.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf) Tj T*
+/F1 12 Tf (Arpaci-Dusseau, R. H., y Arpaci-Dusseau, A. C. \(s. f.\). Common Concurrency) Tj T*
+/F1 12 Tf (Problems. En Operating Systems: Three Easy Pieces.) Tj T*
+/F1 12 Tf (https://pages.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf) Tj T*
+/F1 12 Tf (Universidad Mariano Gálvez de Guatemala. \(s. f.\). Enunciado del Proyecto) Tj T*
+/F1 12 Tf (Final: Sistema Operativo I [Documento de la asignatura proporcionado].) Tj T*
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 1773 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (Consulta de fuentes: 3 de noviembre de 2026.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (ANEXO: docs/evidencias.txt) Tj T*
+/F1 12 Tf (CASO 1. Out of Memory y recuperación de RAM) Tj T*
+/F1 12 Tf (OK Rechazo inmediato con RAM insuficiente -> Out of Memory: se necesitan 41 MB) Tj T*
+/F1 12 Tf ( contiguos; libres=40 MB. Puede existir fragmentación externa.) Tj T*
+/F1 12 Tf (OK OOM no deja PCB ni reserva parcial) Tj T*
+/F1 12 Tf (OK Abortar devuelve toda la RAM) Tj T*
+/F1 12 Tf (OK OOM no consume PID) Tj T*
+/F1 12 Tf (OK Terminar libera RAM) Tj T*
+/F1 12 Tf (OK Memoria cero -> PID y memoria deben ser positivos.) Tj T*
+/F1 12 Tf (OK Memoria negativa -> PID y memoria deben ser positivos.) Tj T*
+/F1 12 Tf (OK Memoria extrema sin desbordamiento -> Out of Memory: se necesitan 214748364) Tj T*
+/F1 12 Tf (7 MB contiguos; libres=100 MB. Puede existir fragmentación externa.) Tj T*
+/F1 12 Tf (OK Ráfaga cero -> Ráfaga: 1 a 1000000 unidades.) Tj T*
+/F1 12 Tf (OK Ráfaga fuera de rango -> Ráfaga: 1 a 1000000 unidades.) Tj T*
+/F1 12 Tf (OK Nombre vacío -> Nombre: 1 a 30 letras, números, _ o -.) Tj T*
+/F1 12 Tf (OK PID inexistente -> PID inexistente: 999) Tj T*
+/F1 12 Tf (OK Fragmentación: 40 MB libres pero ningún hueco de 35 -> Out of Memory: se ne) Tj T*
+/F1 12 Tf (cesitan 35 MB contiguos; libres=40 MB. Puede existir fragmentación externa.) Tj T*
+/F1 12 Tf (OK Huecos contiguos se reutilizan con first-fit) Tj T*
+/F1 12 Tf (Reloj=0 q=3 despachos=0 cambios entre PID=0) Tj T*
+/F1 12 Tf (RAM: 90/100 MB; libres=10 MB; bloques=[Bloque[pid=4, inicio=0, tamanio=60], Bl) Tj T*
+/F1 12 Tf (oque[pid=3, inicio=60, tamanio=30]]) Tj T*
+/F1 12 Tf (Listos: [3, 4]) Tj T*
+/F1 12 Tf (Semáforo=1 propietario=null espera=[]) Tj T*
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 1561 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (Recursos \(recurso=PID\): {}; solicitudes \(PID=recurso\): {}) Tj T*
+/F1 12 Tf (Variable global=0) Tj T*
+/F1 12 Tf (Deadlock: []) Tj T*
+/F1 12 Tf (  1 F1              ABORTADO             RAM= 30 MB CPU=2/2 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=0) Tj T*
+/F1 12 Tf (  2 F2              ABORTADO             RAM= 30 MB CPU=2/2 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=0) Tj T*
+/F1 12 Tf (  3 F3              LISTO                RAM= 30 MB CPU=2/2 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=-1) Tj T*
+/F1 12 Tf (  4 Reutilizar      LISTO                RAM= 60 MB CPU=1/1 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=-1) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (CASO 2. Round Robin q=3; llegadas simultáneas y costo de contexto cero) Tj T*
+/F1 12 Tf (CPU [0,3\) PID=1 restante=2) Tj T*
+/F1 12 Tf (CPU [3,6\) PID=2 restante=1) Tj T*
+/F1 12 Tf (CPU [6,8\) PID=3 restante=0) Tj T*
+/F1 12 Tf (CPU [8,10\) PID=1 restante=0) Tj T*
+/F1 12 Tf (CPU [10,11\) PID=2 restante=0) Tj T*
+/F1 12 Tf (OK RR requiere cinco despachos) Tj T*
+/F1 12 Tf (OK Secuencia exacta A B C A B) Tj T*
+/F1 12 Tf (OK Tiempos de finalización 10, 11, 8) Tj T*
+/F1 12 Tf (OK Tiempos de espera 5, 7, 6; promedio 6) Tj T*
+/F1 12 Tf (OK Tiempos de respuesta 0, 3, 6) Tj T*
+/F1 12 Tf (OK CPU total y liberación de RAM) Tj T*
+/F1 12 Tf (OK CPU sin listos no inventa avance temporal) Tj T*
+/F1 12 Tf (OK Un proceso terminado no vuelve a ejecutarse -> El proceso ya terminó o fue ) Tj T*
+/F1 12 Tf (abortado.) Tj T*
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 1745 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (OK Límite de turnos inválido -> Turnos: 1 a 100000.) Tj T*
+/F1 12 Tf (OK Ejecución acotada mantiene estado para continuar) Tj T*
+/F1 12 Tf (OK Llegadas posteriores usan el reloj vigente) Tj T*
+/F1 12 Tf (CASO 3. Sección crítica y cola FIFO del semáforo) Tj T*
+/F1 12 Tf (Intercalado sin protección: leer A=0, leer B=0, escribir A=1, escribir B=1. Re) Tj T*
+/F1 12 Tf (sultado=1; esperado=2.) Tj T*
+/F1 12 Tf (OK No se modifica variable global sin permiso -> Ejecute wait PID antes de mod) Tj T*
+/F1 12 Tf (ificar la variable global.) Tj T*
+/F1 12 Tf (OK A obtiene wait) Tj T*
+/F1 12 Tf (OK B y C esperan en cola específica) Tj T*
+/F1 12 Tf (OK Bloqueados no permanecen en listos) Tj T*
+/F1 12 Tf (OK B bloqueado no escribe en sección crítica -> El proceso está bloqueado y no) Tj T*
+/F1 12 Tf ( puede efectuar esa operación.) Tj T*
+/F1 12 Tf (OK Un no propietario no libera semáforo -> Solo el propietario puede ejecutar ) Tj T*
+/F1 12 Tf (signal.) Tj T*
+/F1 12 Tf (OK signal transfiere a B en orden FIFO) Tj T*
+/F1 12 Tf (OK Con semáforo se conservan ambas actualizaciones) Tj T*
+/F1 12 Tf (OK Abortar propietario despierta al siguiente) Tj T*
+/F1 12 Tf (OK Semáforo vuelve a libre) Tj T*
+/F1 12 Tf (OK wait no reentrante rechazado sin corromper colas -> El semáforo no es reent) Tj T*
+/F1 12 Tf (rante.) Tj T*
+/F1 12 Tf (OK Abortar solicitante lo retira de la cola) Tj T*
+/F1 12 Tf (OK Desbordamiento de variable global rechazado -> long overflow) Tj T*
+/F1 12 Tf (OK Suma fallida conserva el valor anterior) Tj T*
+/F1 12 Tf (Reloj=0 q=3 despachos=0 cambios entre PID=0) Tj T*
+/F1 12 Tf (RAM: 10/100 MB; libres=90 MB; bloques=[Bloque[pid=1, inicio=0, tamanio=10]]) Tj T*
+/F1 12 Tf (Listos: [1]) Tj T*
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 1601 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (Semáforo=0 propietario=1 espera=[]) Tj T*
+/F1 12 Tf (Recursos \(recurso=PID\): {}; solicitudes \(PID=recurso\): {}) Tj T*
+/F1 12 Tf (Variable global=9223372036854775807) Tj T*
+/F1 12 Tf (Deadlock: []) Tj T*
+/F1 12 Tf (  1 A               LISTO                RAM= 10 MB CPU=12/12 espera=0 bloqueo) Tj T*
+/F1 12 Tf (=0 respuesta=-1 fin=-1) Tj T*
+/F1 12 Tf (  2 B               ABORTADO             RAM= 10 MB CPU=12/12 espera=0 bloqueo) Tj T*
+/F1 12 Tf (=0 respuesta=-1 fin=0) Tj T*
+/F1 12 Tf (  3 C               ABORTADO             RAM= 10 MB CPU=12/12 espera=0 bloqueo) Tj T*
+/F1 12 Tf (=0 respuesta=-1 fin=0) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (CASO 4. Detección y resolución de Deadlock) Tj T*
+/F1 12 Tf (Reloj=0 q=3 despachos=0 cambios entre PID=0) Tj T*
+/F1 12 Tf (RAM: 80/100 MB; libres=20 MB; bloques=[Bloque[pid=1, inicio=0, tamanio=40], Bl) Tj T*
+/F1 12 Tf (oque[pid=2, inicio=40, tamanio=40]]) Tj T*
+/F1 12 Tf (Listos: []) Tj T*
+/F1 12 Tf (Semáforo=1 propietario=null espera=[]) Tj T*
+/F1 12 Tf (Recursos \(recurso=PID\): {1=1, 2=2}; solicitudes \(PID=recurso\): {1=2, 2=1}) Tj T*
+/F1 12 Tf (Variable global=0) Tj T*
+/F1 12 Tf (Deadlock: [1, 2, 1]) Tj T*
+/F1 12 Tf (  1 A               BLOQUEADO_RECURSO    RAM= 40 MB CPU=5/5 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=-1) Tj T*
+/F1 12 Tf (  2 B               BLOQUEADO_RECURSO    RAM= 40 MB CPU=5/5 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=-1) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (OK Grafo detecta ciclo A -> B -> A) Tj T*
+/F1 12 Tf (OK Deadlock bloquea ambos PCB) Tj T*
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 1679 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (OK Planificador alerta sin quedar en bucle) Tj T*
+/F1 12 Tf (OK Abortar A rompe el ciclo y despierta B) Tj T*
+/F1 12 Tf (OK B recibe R1; RAM de A liberada) Tj T*
+/F1 12 Tf (OK El superviviente finaliza y libera todos los recursos) Tj T*
+/F1 12 Tf (t=0 CREAR PID=1 nombre=A RAM=40 CPU=5) Tj T*
+/F1 12 Tf (t=0 CREAR PID=2 nombre=B RAM=40 CPU=5) Tj T*
+/F1 12 Tf (t=0 SOLICITAR PID=1 R1 concedido) Tj T*
+/F1 12 Tf (t=0 SOLICITAR PID=2 R2 concedido) Tj T*
+/F1 12 Tf (t=0 SOLICITAR PID=1 R2 BLOQUEADO) Tj T*
+/F1 12 Tf (t=0 SOLICITAR PID=2 R1 BLOQUEADO) Tj T*
+/F1 12 Tf (t=0 ALERTA DEADLOCK: [1, 2, 1]) Tj T*
+/F1 12 Tf (t=0 DEADLOCK [1, 2, 1]; use abortar PID.) Tj T*
+/F1 12 Tf (t=0 DESPERTAR PID=2) Tj T*
+/F1 12 Tf (t=0 ABORTADO PID=1: RAM y recursos liberados) Tj T*
+/F1 12 Tf (t=3 CPU [0,3\) PID=2 restante=2) Tj T*
+/F1 12 Tf (t=3 FIN QUANTUM: guardar contexto PID=2 y enviar al final de listos) Tj T*
+/F1 12 Tf (t=5 CPU [3,5\) PID=2 restante=0) Tj T*
+/F1 12 Tf (t=5 TERMINADO PID=2: RAM y recursos liberados) Tj T*
+/F1 12 Tf (OK Deadlock requiere dos PID diferentes -> Seleccione dos PID diferentes y amb) Tj T*
+/F1 12 Tf (os recursos libres.) Tj T*
+/F1 12 Tf (OK Fallo de precondición no reserva recursos parciales) Tj T*
+/F1 12 Tf (OK Recurso inexistente -> El recurso debe ser 1 o 2.) Tj T*
+/F1 12 Tf (OK No volver a solicitar recurso propio -> El proceso ya posee ese recurso.) Tj T*
+/F1 12 Tf (OK No liberar recurso ajeno -> El proceso no posee ese recurso.) Tj T*
+/F1 12 Tf (OK Espera simple no es deadlock) Tj T*
+/F1 12 Tf (OK Abortar elimina solicitudes pendientes) Tj T*
+/F1 12 Tf (OK Liberación normal deja recursos libres) Tj T*
+ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 1619 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (OK Consola admite tabulaciones) Tj T*
+/F1 12 Tf (OK Consola sobrevive a entrada: crear X no 3) Tj T*
+/F1 12 Tf (OK Consola sobrevive a entrada: crear X 10) Tj T*
+/F1 12 Tf (OK Consola sobrevive a entrada: crear X 1 9999999999999) Tj T*
+/F1 12 Tf (OK Consola sobrevive a entrada: inventado) Tj T*
+/F1 12 Tf (OK Consola sobrevive a entrada: sumar 1 99999999999999999999999999) Tj T*
+/F1 12 Tf (OK Consola sobrevive a entrada: paso basura) Tj T*
+/F1 12 Tf (OK Consola sobrevive a entrada: wait -2) Tj T*
+/F1 12 Tf (OK Consola imprime éxito y errores recuperables) Tj T*
+/F1 12 Tf (OK Salida explícita) Tj T*
+/F1 12 Tf (OK Estrés reproducible: 500 operaciones mantienen RAM y cola válidas) Tj T*
+/F1 12 Tf (OK Estrés: todos los procesos admitidos finalizan) Tj T*
+/F1 12 Tf (RESULTADO: 65 comprobaciones correctas.) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (ANEXO: docs/trazas/memoria.txt) Tj T*
+/F2 9 Tf (?SIMULADOR KERNEL | RAM 100 MB | Round Robin q=3 | escriba ayuda) Tj T*
+/F1 12 Tf (kernel> crear A 60 5) Tj T*
+/F1 12 Tf (Creado PID=1) Tj T*
+/F1 12 Tf (kernel> crear Exceso 41 2) Tj T*
+/F1 12 Tf (ERROR: Out of Memory: se necesitan 41 MB contiguos; libres=40 MB. Puede existi) Tj T*
+/F1 12 Tf (r fragmentación externa.) Tj T*
+/F1 12 Tf (kernel> estado) Tj T*
+/F1 12 Tf (Reloj=0 q=3 despachos=0 cambios entre PID=0) Tj T*
+/F1 12 Tf (RAM: 60/100 MB; libres=40 MB; bloques=[Bloque[pid=1, inicio=0, tamanio=60]]) Tj T*
+/F1 12 Tf (Listos: [1]) Tj T*
+/F1 12 Tf (Semáforo=1 propietario=null espera=[]) Tj T*
+/F1 12 Tf (Recursos \(recurso=PID\): {}; solicitudes \(PID=recurso\): {}) Tj T*
+ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 29 0 R >>
+endobj
+29 0 obj
+<< /Length 1283 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (Variable global=0) Tj T*
+/F1 12 Tf (Deadlock: []) Tj T*
+/F1 12 Tf (  1 A               LISTO                RAM= 60 MB CPU=5/5 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=-1) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (kernel> abortar 1) Tj T*
+/F1 12 Tf (Proceso abortado; memoria y recursos liberados.) Tj T*
+/F1 12 Tf (Sin deadlock de recursos.) Tj T*
+/F1 12 Tf (kernel> crear Completo 100 1) Tj T*
+/F1 12 Tf (Creado PID=2) Tj T*
+/F1 12 Tf (kernel> ejecutar) Tj T*
+/F1 12 Tf (CPU [0,1\) PID=2 restante=0) Tj T*
+/F1 12 Tf (kernel> estado) Tj T*
+/F1 12 Tf (Reloj=1 q=3 despachos=1 cambios entre PID=0) Tj T*
+/F1 12 Tf (RAM: 0/100 MB; libres=100 MB; bloques=[]) Tj T*
+/F1 12 Tf (Listos: []) Tj T*
+/F1 12 Tf (Semáforo=1 propietario=null espera=[]) Tj T*
+/F1 12 Tf (Recursos \(recurso=PID\): {}; solicitudes \(PID=recurso\): {}) Tj T*
+/F1 12 Tf (Variable global=0) Tj T*
+/F1 12 Tf (Deadlock: []) Tj T*
+/F1 12 Tf (  1 A               ABORTADO             RAM= 60 MB CPU=5/5 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=0) Tj T*
+/F1 12 Tf (  2 Completo        TERMINADO            RAM=100 MB CPU=0/1 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=0 fin=1) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (kernel> salir) Tj T*
+/F1 12 Tf () Tj T*
+ET
+endstream
+endobj
+30 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 31 0 R >>
+endobj
+31 0 obj
+<< /Length 1398 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (ANEXO: docs/trazas/round-robin.txt) Tj T*
+/F2 9 Tf (?SIMULADOR KERNEL | RAM 100 MB | Round Robin q=3 | escriba ayuda) Tj T*
+/F1 12 Tf (kernel> crear A 10 5) Tj T*
+/F1 12 Tf (Creado PID=1) Tj T*
+/F1 12 Tf (kernel> crear B 10 4) Tj T*
+/F1 12 Tf (Creado PID=2) Tj T*
+/F1 12 Tf (kernel> crear C 10 2) Tj T*
+/F1 12 Tf (Creado PID=3) Tj T*
+/F1 12 Tf (kernel> ejecutar) Tj T*
+/F1 12 Tf (CPU [0,3\) PID=1 restante=2) Tj T*
+/F1 12 Tf (CPU [3,6\) PID=2 restante=1) Tj T*
+/F1 12 Tf (CPU [6,8\) PID=3 restante=0) Tj T*
+/F1 12 Tf (CPU [8,10\) PID=1 restante=0) Tj T*
+/F1 12 Tf (CPU [10,11\) PID=2 restante=0) Tj T*
+/F1 12 Tf (kernel> estado) Tj T*
+/F1 12 Tf (Reloj=11 q=3 despachos=5 cambios entre PID=4) Tj T*
+/F1 12 Tf (RAM: 0/100 MB; libres=100 MB; bloques=[]) Tj T*
+/F1 12 Tf (Listos: []) Tj T*
+/F1 12 Tf (Semáforo=1 propietario=null espera=[]) Tj T*
+/F1 12 Tf (Recursos \(recurso=PID\): {}; solicitudes \(PID=recurso\): {}) Tj T*
+/F1 12 Tf (Variable global=0) Tj T*
+/F1 12 Tf (Deadlock: []) Tj T*
+/F1 12 Tf (  1 A               TERMINADO            RAM= 10 MB CPU=0/5 espera=5 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=0 fin=10) Tj T*
+/F1 12 Tf (  2 B               TERMINADO            RAM= 10 MB CPU=0/4 espera=7 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=3 fin=11) Tj T*
+/F1 12 Tf (  3 C               TERMINADO            RAM= 10 MB CPU=0/2 espera=6 bloqueo=0) Tj T*
+ET
+endstream
+endobj
+32 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 33 0 R >>
+endobj
+33 0 obj
+<< /Length 1339 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf ( respuesta=6 fin=8) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (kernel> bitacora) Tj T*
+/F1 12 Tf (t=0 CREAR PID=1 nombre=A RAM=10 CPU=5) Tj T*
+/F1 12 Tf (t=0 CREAR PID=2 nombre=B RAM=10 CPU=4) Tj T*
+/F1 12 Tf (t=0 CREAR PID=3 nombre=C RAM=10 CPU=2) Tj T*
+/F1 12 Tf (t=3 CPU [0,3\) PID=1 restante=2) Tj T*
+/F1 12 Tf (t=3 FIN QUANTUM: guardar contexto PID=1 y enviar al final de listos) Tj T*
+/F1 12 Tf (t=6 CPU [3,6\) PID=2 restante=1) Tj T*
+/F1 12 Tf (t=6 FIN QUANTUM: guardar contexto PID=2 y enviar al final de listos) Tj T*
+/F1 12 Tf (t=8 CPU [6,8\) PID=3 restante=0) Tj T*
+/F1 12 Tf (t=8 TERMINADO PID=3: RAM y recursos liberados) Tj T*
+/F1 12 Tf (t=10 CPU [8,10\) PID=1 restante=0) Tj T*
+/F1 12 Tf (t=10 TERMINADO PID=1: RAM y recursos liberados) Tj T*
+/F1 12 Tf (t=11 CPU [10,11\) PID=2 restante=0) Tj T*
+/F1 12 Tf (t=11 TERMINADO PID=2: RAM y recursos liberados) Tj T*
+/F1 12 Tf (kernel> salir) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (ANEXO: docs/trazas/semaforo.txt) Tj T*
+/F2 9 Tf (?SIMULADOR KERNEL | RAM 100 MB | Round Robin q=3 | escriba ayuda) Tj T*
+/F1 12 Tf (kernel> crear A 10 12) Tj T*
+/F1 12 Tf (Creado PID=1) Tj T*
+/F1 12 Tf (kernel> crear B 10 12) Tj T*
+/F1 12 Tf (Creado PID=2) Tj T*
+/F1 12 Tf (kernel> wait 1) Tj T*
+/F1 12 Tf (Permiso concedido.) Tj T*
+/F1 12 Tf (kernel> wait 2) Tj T*
+ET
+endstream
+endobj
+34 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 35 0 R >>
+endobj
+35 0 obj
+<< /Length 1340 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (Proceso bloqueado en semáforo.) Tj T*
+/F1 12 Tf (kernel> sumar 2 1) Tj T*
+/F1 12 Tf (ERROR: El proceso está bloqueado y no puede efectuar esa operación.) Tj T*
+/F1 12 Tf (kernel> sumar 1 1) Tj T*
+/F1 12 Tf (Variable global=1) Tj T*
+/F1 12 Tf (kernel> signal 1) Tj T*
+/F1 12 Tf (Permiso liberado/transferido.) Tj T*
+/F1 12 Tf (kernel> sumar 2 1) Tj T*
+/F1 12 Tf (Variable global=2) Tj T*
+/F1 12 Tf (kernel> signal 2) Tj T*
+/F1 12 Tf (Permiso liberado/transferido.) Tj T*
+/F1 12 Tf (kernel> estado) Tj T*
+/F1 12 Tf (Reloj=0 q=3 despachos=0 cambios entre PID=0) Tj T*
+/F1 12 Tf (RAM: 20/100 MB; libres=80 MB; bloques=[Bloque[pid=1, inicio=0, tamanio=10], Bl) Tj T*
+/F1 12 Tf (oque[pid=2, inicio=10, tamanio=10]]) Tj T*
+/F1 12 Tf (Listos: [1, 2]) Tj T*
+/F1 12 Tf (Semáforo=1 propietario=null espera=[]) Tj T*
+/F1 12 Tf (Recursos \(recurso=PID\): {}; solicitudes \(PID=recurso\): {}) Tj T*
+/F1 12 Tf (Variable global=2) Tj T*
+/F1 12 Tf (Deadlock: []) Tj T*
+/F1 12 Tf (  1 A               LISTO                RAM= 10 MB CPU=12/12 espera=0 bloqueo) Tj T*
+/F1 12 Tf (=0 respuesta=-1 fin=-1) Tj T*
+/F1 12 Tf (  2 B               LISTO                RAM= 10 MB CPU=12/12 espera=0 bloqueo) Tj T*
+/F1 12 Tf (=0 respuesta=-1 fin=-1) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (kernel> salir) Tj T*
+/F1 12 Tf () Tj T*
+ET
+endstream
+endobj
+36 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 37 0 R >>
+endobj
+37 0 obj
+<< /Length 1439 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (ANEXO: docs/trazas/deadlock.txt) Tj T*
+/F2 9 Tf (?SIMULADOR KERNEL | RAM 100 MB | Round Robin q=3 | escriba ayuda) Tj T*
+/F1 12 Tf (kernel> crear A 40 5) Tj T*
+/F1 12 Tf (Creado PID=1) Tj T*
+/F1 12 Tf (kernel> crear B 40 5) Tj T*
+/F1 12 Tf (Creado PID=2) Tj T*
+/F1 12 Tf (kernel> deadlock 1 2) Tj T*
+/F1 12 Tf (ALERTA DEADLOCK [1, 2, 1]; use abortar PID.) Tj T*
+/F1 12 Tf (kernel> estado) Tj T*
+/F1 12 Tf (Reloj=0 q=3 despachos=0 cambios entre PID=0) Tj T*
+/F1 12 Tf (RAM: 80/100 MB; libres=20 MB; bloques=[Bloque[pid=1, inicio=0, tamanio=40], Bl) Tj T*
+/F1 12 Tf (oque[pid=2, inicio=40, tamanio=40]]) Tj T*
+/F1 12 Tf (Listos: []) Tj T*
+/F1 12 Tf (Semáforo=1 propietario=null espera=[]) Tj T*
+/F1 12 Tf (Recursos \(recurso=PID\): {1=1, 2=2}; solicitudes \(PID=recurso\): {1=2, 2=1}) Tj T*
+/F1 12 Tf (Variable global=0) Tj T*
+/F1 12 Tf (Deadlock: [1, 2, 1]) Tj T*
+/F1 12 Tf (  1 A               BLOQUEADO_RECURSO    RAM= 40 MB CPU=5/5 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=-1) Tj T*
+/F1 12 Tf (  2 B               BLOQUEADO_RECURSO    RAM= 40 MB CPU=5/5 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=-1) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (kernel> detectar) Tj T*
+/F1 12 Tf (ALERTA DEADLOCK [1, 2, 1]; use abortar PID.) Tj T*
+/F1 12 Tf (kernel> abortar 1) Tj T*
+/F1 12 Tf (Proceso abortado; memoria y recursos liberados.) Tj T*
+/F1 12 Tf (Sin deadlock de recursos.) Tj T*
+ET
+endstream
+endobj
+38 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 39 0 R >>
+endobj
+39 0 obj
+<< /Length 1349 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (kernel> detectar) Tj T*
+/F1 12 Tf (Sin deadlock de recursos.) Tj T*
+/F1 12 Tf (kernel> ejecutar) Tj T*
+/F1 12 Tf (CPU [0,3\) PID=2 restante=2) Tj T*
+/F1 12 Tf (CPU [3,5\) PID=2 restante=0) Tj T*
+/F1 12 Tf (kernel> estado) Tj T*
+/F1 12 Tf (Reloj=5 q=3 despachos=2 cambios entre PID=0) Tj T*
+/F1 12 Tf (RAM: 0/100 MB; libres=100 MB; bloques=[]) Tj T*
+/F1 12 Tf (Listos: []) Tj T*
+/F1 12 Tf (Semáforo=1 propietario=null espera=[]) Tj T*
+/F1 12 Tf (Recursos \(recurso=PID\): {}; solicitudes \(PID=recurso\): {}) Tj T*
+/F1 12 Tf (Variable global=0) Tj T*
+/F1 12 Tf (Deadlock: []) Tj T*
+/F1 12 Tf (  1 A               ABORTADO             RAM= 40 MB CPU=5/5 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=-1 fin=0) Tj T*
+/F1 12 Tf (  2 B               TERMINADO            RAM= 40 MB CPU=0/5 espera=0 bloqueo=0) Tj T*
+/F1 12 Tf ( respuesta=0 fin=5) Tj T*
+/F1 12 Tf () Tj T*
+/F1 12 Tf (kernel> bitacora) Tj T*
+/F1 12 Tf (t=0 CREAR PID=1 nombre=A RAM=40 CPU=5) Tj T*
+/F1 12 Tf (t=0 CREAR PID=2 nombre=B RAM=40 CPU=5) Tj T*
+/F1 12 Tf (t=0 SOLICITAR PID=1 R1 concedido) Tj T*
+/F1 12 Tf (t=0 SOLICITAR PID=2 R2 concedido) Tj T*
+/F1 12 Tf (t=0 SOLICITAR PID=1 R2 BLOQUEADO) Tj T*
+/F1 12 Tf (t=0 SOLICITAR PID=2 R1 BLOQUEADO) Tj T*
+/F1 12 Tf (t=0 ALERTA DEADLOCK: [1, 2, 1]) Tj T*
+/F1 12 Tf (t=0 DESPERTAR PID=2) Tj T*
+ET
+endstream
+endobj
+40 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 << /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >> >> >> /Contents 41 0 R >>
+endobj
+41 0 obj
+<< /Length 376 >>
+stream
+BT /F1 12 Tf 24 TL 72 720 Td
+/F1 12 Tf (t=0 ABORTADO PID=1: RAM y recursos liberados) Tj T*
+/F1 12 Tf (t=3 CPU [0,3\) PID=2 restante=2) Tj T*
+/F1 12 Tf (t=3 FIN QUANTUM: guardar contexto PID=2 y enviar al final de listos) Tj T*
+/F1 12 Tf (t=5 CPU [3,5\) PID=2 restante=0) Tj T*
+/F1 12 Tf (t=5 TERMINADO PID=2: RAM y recursos liberados) Tj T*
+/F1 12 Tf (kernel> salir) Tj T*
+ET
+endstream
+endobj
+xref
+0 42
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000241 00000 n 
+0000000340 00000 n 
+0000000550 00000 n 
+0000002394 00000 n 
+0000002604 00000 n 
+0000004502 00000 n 
+0000004712 00000 n 
+0000006697 00000 n 
+0000006909 00000 n 
+0000009149 00000 n 
+0000009361 00000 n 
+0000011544 00000 n 
+0000011756 00000 n 
+0000013729 00000 n 
+0000013941 00000 n 
+0000015767 00000 n 
+0000015979 00000 n 
+0000017593 00000 n 
+0000017805 00000 n 
+0000019603 00000 n 
+0000019815 00000 n 
+0000021469 00000 n 
+0000021681 00000 n 
+0000023413 00000 n 
+0000023625 00000 n 
+0000025297 00000 n 
+0000025509 00000 n 
+0000026845 00000 n 
+0000027057 00000 n 
+0000028508 00000 n 
+0000028720 00000 n 
+0000030112 00000 n 
+0000030324 00000 n 
+0000031717 00000 n 
+0000031929 00000 n 
+0000033421 00000 n 
+0000033633 00000 n 
+0000035035 00000 n 
+0000035247 00000 n 
+trailer
+<< /Size 42 /Root 1 0 R >>
+startxref
+35675
+%%EOF
