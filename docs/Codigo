@@ -1,0 +1,596 @@
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <string>
+#include <limits>
+#include <algorithm>
+#include <cstdlib>
+
+using namespace std;
+
+const int RAM_TOTAL = 100;
+const int QUANTUM = 3;
+
+// Estructura PCB
+struct PCB {
+    int pid;
+    string estado;
+    int memoria;
+    int rafagaTotal;
+    int rafagaRestante;
+};
+
+// Variables del sistema
+vector<PCB> procesos;
+int siguientePID = 1;
+int memoriaUsada = 0;
+
+// Variables del semaforo binario
+bool semaforoLibre = true;
+int propietarioSemaforo = -1;
+queue<int> colaEspera;
+int variableCompartida = 0;
+
+// Variables del Deadlock
+int recurso1 = -1;
+int recurso2 = -1;
+bool deadlockActivo = false;
+
+// Limpiar pantalla
+void limpiarPantalla() {
+    system("cls");
+}
+
+// Pausar pantalla
+void pausarPantalla() {
+    cout << "\n";
+    system("pause");
+}
+
+// Leer numeros enteros
+int leerEntero(string mensaje) {
+    int valor;
+
+    while (true) {
+        cout << mensaje;
+
+        if (cin >> valor) {
+            return valor;
+        }
+
+        cout << "ERROR: Ingrese un numero valido.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+// Buscar proceso por PID
+PCB* buscarProceso(int pid) {
+    for (auto &p : procesos) {
+        if (p.pid == pid) {
+            return &p;
+        }
+    }
+
+    return nullptr;
+}
+
+// Liberar memoria de un proceso
+void liberarMemoria(PCB &p) {
+    memoriaUsada -= p.memoria;
+    p.memoria = 0;
+}
+
+// OPCION 1: CREAR PROCESO
+void crearProceso() {
+    limpiarPantalla();
+
+    cout << "====================================\n";
+    cout << "          CREAR PROCESO\n";
+    cout << "====================================\n";
+
+    int memoria = leerEntero("Memoria requerida (MB): ");
+    int rafaga = leerEntero("Rafaga de CPU: ");
+
+    if (memoria <= 0 || rafaga <= 0) {
+        cout << "\nERROR: Los valores deben ser positivos.\n";
+        return;
+    }
+
+    if (memoria > RAM_TOTAL - memoriaUsada) {
+        cout << "\nERROR: OUT OF MEMORY\n";
+        cout << "No hay suficiente memoria RAM.\n";
+        cout << "RAM disponible: "
+             << RAM_TOTAL - memoriaUsada << " MB\n";
+        return;
+    }
+
+    PCB p;
+
+    p.pid = siguientePID++;
+    p.estado = "LISTO";
+    p.memoria = memoria;
+    p.rafagaTotal = rafaga;
+    p.rafagaRestante = rafaga;
+
+    procesos.push_back(p);
+    memoriaUsada += memoria;
+
+    cout << "\nProceso creado correctamente.\n";
+    cout << "PID: " << p.pid << "\n";
+    cout << "Estado: " << p.estado << "\n";
+    cout << "Memoria asignada: " << p.memoria << " MB\n";
+    cout << "Rafaga CPU: " << p.rafagaTotal << "\n";
+}
+
+// OPCION 2: MOSTRAR PCB
+void mostrarProcesos() {
+    limpiarPantalla();
+
+    cout << "====================================\n";
+    cout << "       TABLA DE PROCESOS PCB\n";
+    cout << "====================================\n";
+
+    if (procesos.empty()) {
+        cout << "No existen procesos registrados.\n";
+        return;
+    }
+
+    for (const auto &p : procesos) {
+        cout << "\n------------------------------------\n";
+        cout << "PID: " << p.pid << "\n";
+        cout << "Estado: " << p.estado << "\n";
+        cout << "Memoria: " << p.memoria << " MB\n";
+        cout << "Rafaga total: " << p.rafagaTotal << "\n";
+        cout << "Rafaga restante: " << p.rafagaRestante << "\n";
+    }
+}
+
+// OPCION 3: GESTION DE MEMORIA
+void mostrarMemoria() {
+    limpiarPantalla();
+
+    cout << "====================================\n";
+    cout << "        GESTION DE MEMORIA RAM\n";
+    cout << "====================================\n";
+
+    cout << "RAM total: " << RAM_TOTAL << " MB\n";
+    cout << "RAM utilizada: " << memoriaUsada << " MB\n";
+    cout << "RAM disponible: "
+         << RAM_TOTAL - memoriaUsada << " MB\n";
+
+    cout << "\nProcesos cargados en memoria:\n";
+
+    bool encontrados = false;
+
+    for (const auto &p : procesos) {
+        if (p.memoria > 0) {
+            cout << "PID " << p.pid
+                 << " - " << p.memoria << " MB\n";
+            encontrados = true;
+        }
+    }
+
+    if (!encontrados) {
+        cout << "No hay procesos cargados.\n";
+    }
+}
+
+// OPCION 4: ROUND ROBIN
+void roundRobin() {
+    limpiarPantalla();
+
+    cout << "====================================\n";
+    cout << "       PLANIFICACION ROUND ROBIN\n";
+    cout << "====================================\n";
+    cout << "Quantum: " << QUANTUM << "\n";
+
+    queue<int> colaListos;
+
+    for (int i = 0; i < (int)procesos.size(); i++) {
+        if (procesos[i].estado == "LISTO") {
+            colaListos.push(i);
+        }
+    }
+
+    if (colaListos.empty()) {
+        cout << "\nNo hay procesos listos.\n";
+        return;
+    }
+
+    int tiempo = 0;
+
+    while (!colaListos.empty()) {
+        int indice = colaListos.front();
+        colaListos.pop();
+
+        PCB &p = procesos[indice];
+
+        p.estado = "EJECUTANDO";
+
+        int ejecucion = min(QUANTUM, p.rafagaRestante);
+
+        cout << "\n------------------------------------\n";
+        cout << "Ejecutando PID: " << p.pid << "\n";
+        cout << "Tiempo asignado: " << ejecucion << "\n";
+
+        p.rafagaRestante -= ejecucion;
+        tiempo += ejecucion;
+
+        if (p.rafagaRestante == 0) {
+            p.estado = "TERMINADO";
+            liberarMemoria(p);
+
+            cout << "Proceso finalizado.\n";
+            cout << "Memoria liberada.\n";
+        } else {
+            p.estado = "LISTO";
+            colaListos.push(indice);
+
+            cout << "Cambio de contexto.\n";
+            cout << "Rafaga restante: "
+                 << p.rafagaRestante << "\n";
+        }
+    }
+
+    cout << "\n====================================\n";
+    cout << "Todos los procesos listos finalizaron.\n";
+    cout << "Tiempo total CPU: " << tiempo << "\n";
+}
+
+// SEMAFORO: WAIT
+void waitSemaforo(int pid) {
+    PCB* p = buscarProceso(pid);
+
+    if (p == nullptr || p->estado == "TERMINADO") {
+        cout << "ERROR: Proceso no valido.\n";
+        return;
+    }
+
+    if (p->estado == "BLOQUEADO") {
+        cout << "El proceso ya esta bloqueado.\n";
+        return;
+    }
+
+    if (propietarioSemaforo == pid) {
+        cout << "El proceso ya posee el semaforo.\n";
+        return;
+    }
+
+    if (semaforoLibre) {
+        semaforoLibre = false;
+        propietarioSemaforo = pid;
+
+        cout << "PID " << pid
+             << " ingreso a la seccion critica.\n";
+    } else {
+        p->estado = "BLOQUEADO";
+        colaEspera.push(pid);
+
+        cout << "Semaforo ocupado.\n";
+        cout << "PID " << pid
+             << " enviado a la cola de espera.\n";
+    }
+}
+
+// SEMAFORO: SIGNAL
+void signalSemaforo(int pid) {
+    if (propietarioSemaforo != pid) {
+        cout << "ERROR: El proceso no posee el semaforo.\n";
+        return;
+    }
+
+    cout << "PID " << pid
+         << " libero el semaforo.\n";
+
+    semaforoLibre = true;
+    propietarioSemaforo = -1;
+
+    if (!colaEspera.empty()) {
+        int siguiente = colaEspera.front();
+        colaEspera.pop();
+
+        PCB* p = buscarProceso(siguiente);
+
+        if (p != nullptr) {
+            p->estado = "LISTO";
+        }
+
+        semaforoLibre = false;
+        propietarioSemaforo = siguiente;
+
+        cout << "Semaforo asignado al PID "
+             << siguiente << "\n";
+    }
+}
+
+// OPCION 5: CONCURRENCIA
+void concurrencia() {
+    int opcion;
+
+    do {
+        limpiarPantalla();
+
+        cout << "====================================\n";
+        cout << "       GESTION DE CONCURRENCIA\n";
+        cout << "====================================\n";
+        cout << "1. Solicitar semaforo (wait)\n";
+        cout << "2. Modificar variable compartida\n";
+        cout << "3. Liberar semaforo (signal)\n";
+        cout << "4. Mostrar variable compartida\n";
+        cout << "0. Regresar al menu principal\n";
+        cout << "====================================\n";
+
+        opcion = leerEntero("Seleccione una opcion: ");
+
+        limpiarPantalla();
+
+        switch (opcion) {
+            case 1: {
+                cout << "--- SOLICITAR SEMAFORO ---\n";
+                int pid = leerEntero("Ingrese PID: ");
+                waitSemaforo(pid);
+                break;
+            }
+
+            case 2: {
+                cout << "--- VARIABLE COMPARTIDA ---\n";
+                int pid = leerEntero("Ingrese PID: ");
+
+                if (propietarioSemaforo == pid) {
+                    variableCompartida++;
+
+                    cout << "Variable modificada.\n";
+                    cout << "Nuevo valor: "
+                         << variableCompartida << "\n";
+                } else {
+                    cout << "Acceso denegado.\n";
+                    cout << "Debe poseer el semaforo.\n";
+                }
+                break;
+            }
+
+            case 3: {
+                cout << "--- LIBERAR SEMAFORO ---\n";
+                int pid = leerEntero("Ingrese PID: ");
+                signalSemaforo(pid);
+                break;
+            }
+
+            case 4:
+                cout << "--- VARIABLE COMPARTIDA ---\n";
+                cout << "Valor actual: "
+                     << variableCompartida << "\n";
+                break;
+
+            case 0:
+                break;
+
+            default:
+                cout << "Opcion no valida.\n";
+        }
+
+        if (opcion != 0) {
+            pausarPantalla();
+        }
+
+    } while (opcion != 0);
+}
+
+// OPCION 6: SIMULAR DEADLOCK
+void simularDeadlock() {
+    limpiarPantalla();
+
+    cout << "====================================\n";
+    cout << "          SIMULAR DEADLOCK\n";
+    cout << "====================================\n";
+
+    if (deadlockActivo) {
+        cout << "Ya existe un Deadlock activo.\n";
+        return;
+    }
+
+    if (recurso1 != -1 || recurso2 != -1) {
+        cout << "Los recursos estan ocupados.\n";
+        return;
+    }
+
+    int pidA = leerEntero("PID del proceso A: ");
+    int pidB = leerEntero("PID del proceso B: ");
+
+    PCB* a = buscarProceso(pidA);
+    PCB* b = buscarProceso(pidB);
+
+    if (a == nullptr || b == nullptr || pidA == pidB) {
+        cout << "ERROR: Procesos no validos.\n";
+        return;
+    }
+
+    if (a->estado != "LISTO" || b->estado != "LISTO") {
+        cout << "Los procesos deben estar LISTOS.\n";
+        return;
+    }
+
+    recurso1 = pidA;
+    recurso2 = pidB;
+
+    a->estado = "BLOQUEADO";
+    b->estado = "BLOQUEADO";
+
+    deadlockActivo = true;
+
+    cout << "\nProceso A (PID " << pidA << "):\n";
+    cout << "Posee Recurso 1.\n";
+    cout << "Espera Recurso 2.\n";
+
+    cout << "\nProceso B (PID " << pidB << "):\n";
+    cout << "Posee Recurso 2.\n";
+    cout << "Espera Recurso 1.\n";
+
+    cout << "\nALERTA: DEADLOCK DETECTADO.\n";
+    cout << "Existe una espera circular.\n";
+}
+
+// OPCION 7: RESOLVER DEADLOCK
+void resolverDeadlock() {
+    limpiarPantalla();
+
+    cout << "====================================\n";
+    cout << "          RESOLVER DEADLOCK\n";
+    cout << "====================================\n";
+
+    if (!deadlockActivo) {
+        cout << "No existe un Deadlock activo.\n";
+        return;
+    }
+
+    cout << "Proceso A: PID " << recurso1 << "\n";
+    cout << "Proceso B: PID " << recurso2 << "\n";
+
+    int pid = leerEntero("\nPID que desea abortar: ");
+
+    if (pid != recurso1 && pid != recurso2) {
+        cout << "ERROR: PID no pertenece al Deadlock.\n";
+        return;
+    }
+
+    PCB* p = buscarProceso(pid);
+
+    if (p != nullptr) {
+        p->estado = "TERMINADO";
+        p->rafagaRestante = 0;
+        liberarMemoria(*p);
+    }
+
+    int sobreviviente;
+
+    if (pid == recurso1) {
+        sobreviviente = recurso2;
+    } else {
+        sobreviviente = recurso1;
+    }
+
+    PCB* otro = buscarProceso(sobreviviente);
+
+    if (otro != nullptr) {
+        otro->estado = "LISTO";
+    }
+
+    recurso1 = -1;
+    recurso2 = -1;
+    deadlockActivo = false;
+
+    cout << "\nProceso " << pid << " abortado.\n";
+    cout << "Recursos liberados.\n";
+    cout << "Proceso " << sobreviviente
+         << " vuelve al estado LISTO.\n";
+    cout << "\nDEADLOCK RESUELTO CORRECTAMENTE.\n";
+}
+
+// OPCION 8: ESTADO DEL SISTEMA
+void estadoSistema() {
+    limpiarPantalla();
+
+    cout << "====================================\n";
+    cout << "         ESTADO DEL SISTEMA\n";
+    cout << "====================================\n";
+
+    cout << "Procesos registrados: "
+         << procesos.size() << "\n";
+
+    cout << "\n--- MEMORIA ---\n";
+    cout << "RAM total: " << RAM_TOTAL << " MB\n";
+    cout << "RAM utilizada: " << memoriaUsada << " MB\n";
+    cout << "RAM disponible: "
+         << RAM_TOTAL - memoriaUsada << " MB\n";
+
+    cout << "\n--- CONCURRENCIA ---\n";
+    cout << "Variable compartida: "
+         << variableCompartida << "\n";
+
+    cout << "Semaforo: "
+         << (semaforoLibre ? "LIBRE" : "OCUPADO")
+         << "\n";
+
+    cout << "\n--- DEADLOCK ---\n";
+    cout << "Estado: "
+         << (deadlockActivo ? "DETECTADO" : "NO DETECTADO")
+         << "\n";
+}
+
+// MENU PRINCIPAL
+int main() {
+    int opcion;
+
+    do {
+        limpiarPantalla();
+
+        cout << "====================================\n";
+        cout << "        SIMULADOR DE KERNEL\n";
+        cout << "        SISTEMAS OPERATIVOS I\n";
+        cout << "====================================\n";
+        cout << "1. Crear proceso\n";
+        cout << "2. Mostrar procesos (PCB)\n";
+        cout << "3. Gestionar memoria RAM\n";
+        cout << "4. Ejecutar Round Robin\n";
+        cout << "5. Gestionar concurrencia\n";
+        cout << "6. Simular Deadlock\n";
+        cout << "7. Resolver Deadlock\n";
+        cout << "8. Mostrar estado del sistema\n";
+        cout << "0. Salir\n";
+        cout << "====================================\n";
+
+        opcion = leerEntero("Seleccione una opcion: ");
+
+        limpiarPantalla();
+
+        switch (opcion) {
+            case 1:
+                crearProceso();
+                break;
+
+            case 2:
+                mostrarProcesos();
+                break;
+
+            case 3:
+                mostrarMemoria();
+                break;
+
+            case 4:
+                roundRobin();
+                break;
+
+            case 5:
+                concurrencia();
+                break;
+
+            case 6:
+                simularDeadlock();
+                break;
+
+            case 7:
+                resolverDeadlock();
+                break;
+
+            case 8:
+                estadoSistema();
+                break;
+
+            case 0:
+                cout << "Gracias por utilizar el simulador.\n";
+                break;
+
+            default:
+                cout << "ERROR: Opcion no valida.\n";
+        }
+
+        if (opcion != 0) {
+            pausarPantalla();
+        }
+
+    } while (opcion != 0);
+
+    return 0;
+}
